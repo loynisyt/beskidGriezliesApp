@@ -1,0 +1,15 @@
+.logo {
+  width: 80px; /* Zwiększone logo */
+  height: 80px; /* Zwiększone logo */
+}
+
+.button {
+  font-size: 1.2rem; /* Większe przyciski */
+  margin-left: 10px; /* Przerwa między przyciskami */
+}
+
+.profile-pic {
+  border-radius: 50%;
+  width: 60px; /* Zwiększone zdjęcie profilu */
+  height: 60px; /* Zwiększone zdjęcie profilu */
+}

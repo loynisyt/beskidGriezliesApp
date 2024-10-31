@@ -1,0 +1,24 @@
+.home-container {
+    background-color: #f0f8ff; /* Jasnoniebieski */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+    color: #007acc; /* Kolor niebieski */
+  }
+  
+  h2 {
+    color: #005fa3; /* Ciemniejszy niebieski */
+  }
+  
+  ul {
+    list-style-type: none; /* Usunięcie punktów listy */
+    padding: 0;
+  }
+  
+  li {
+    margin: 10px 0;
+  }
+  
