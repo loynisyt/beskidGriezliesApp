@@ -1,4 +1,4 @@
-// src/components/Auth/Login.js
+// frontend/src/components/Auth/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Auth.css';
@@ -7,31 +7,48 @@ const Login = ({ onLogin }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setIsLoading(true);
 
         try {
             const response = await fetch('http://localhost:5000/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                 },
                 body: JSON.stringify({ username, password }),
+                credentials: 'include'
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.message || 'Login error occurred');
+                throw new Error(data.message || 'Login failed');
             }
 
-            const data = await response.json();
-            onLogin(data.user);
-            navigate('/');
+            if (data.user && data.token) {
+                // Store token
+                localStorage.setItem('token', data.token);
+                // Store user data
+                localStorage.setItem('user', JSON.stringify(data.user));
+                // Update app state
+                onLogin(data.user);
+                // Redirect to home
+                navigate('/');
+            } else {
+                throw new Error('Invalid response format');
+            }
         } catch (err) {
-            setError(err.message);
+            console.error('Login error:', err);
+            setError(err.message || 'An unexpected error occurred');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -40,7 +57,7 @@ const Login = ({ onLogin }) => {
             <div className="columns is-centered">
                 <div className="column is-half">
                     <h2 className="title is-2">Login</h2>
-                    {error && <p className="has-text-danger">{error}</p>}
+                    {error && <p className="notification is-danger">{error}</p>}
                     <form onSubmit={handleSubmit}>
                         <div className="field">
                             <label className="label">Username</label>
@@ -68,7 +85,13 @@ const Login = ({ onLogin }) => {
                         </div>
                         <div className="field">
                             <div className="control">
-                                <button className="button is-primary" type="submit">Login</button>
+                                <button 
+                                    className={`button is-primary ${isLoading ? 'is-loading' : ''}`} 
+                                    type="submit" 
+                                    disabled={isLoading}
+                                >
+                                    Login
+                                </button>
                             </div>
                         </div>
                     </form>

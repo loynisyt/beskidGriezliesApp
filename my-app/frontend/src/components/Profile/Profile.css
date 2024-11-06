@@ -1,0 +1,31 @@
+/* src/components/Profile/Profile.css */
+.profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .profile-container .box {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-container .field {
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-container .label {
+    color: #363636;
+    font-weight: 600;
+  }
+  
+  .profile-container .input:disabled {
+    background-color: #f5f5f5;
+    border-color: #dbdbdb;
+    cursor: not-allowed;
+  }
+  
+  .profile-container .notification {
+    margin-bottom: 1.5rem;
+  }

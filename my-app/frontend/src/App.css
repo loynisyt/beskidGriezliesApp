@@ -1,0 +1,137 @@
+:root {
+  --primary-color: #00d1b2;
+  --background-light: #ffffff;
+  --text-light: #4a4a4a;
+  --background-dark: #121212;
+  --text-dark: #ffffff;
+  --navbar-dark: #1e1e1e;
+  --hover-light: #f5f5f5;
+  --hover-dark: #2c2c2c;
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.light-mode {
+  background-color: var(--background-light);
+  color: var(--text-light);
+}
+
+body.dark-mode {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
+
+/* Navbar styles */
+.navbar {
+  min-height: 5rem !important;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: background-color 0.3s ease;
+}
+
+.light-mode .navbar {
+  background-color: var(--background-light);
+}
+
+.dark-mode .navbar {
+  background-color: var(--navbar-dark);
+}
+
+.navbar-brand img {
+  max-height: 3.5rem !important;
+  height: auto;
+  width: auto;
+}
+
+.navbar-item {
+  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.light-mode .navbar-item {
+  color: var(--text-light);
+}
+
+.dark-mode .navbar-item {
+  color: var(--text-dark);
+}
+
+.navbar-item:hover {
+  background-color: var(--hover-light) !important;
+}
+
+.dark-mode .navbar-item:hover {
+  background-color: var(--hover-dark) !important;
+}
+
+.container {
+  padding: 2rem;
+}
+
+.dark-mode .title,
+.dark-mode .subtitle,
+.dark-mode p,
+.dark-mode label,
+.dark-mode .table {
+  color: var(--text-dark);
+}
+
+.home-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 250px;
+  margin-bottom: 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.home-button:hover {
+  background-color: #00c4a7;
+}
+
+.home-button img {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 1rem;
+}
+
+.dark-mode .admin-panel {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
+
+.dark-mode .admin-panel input,
+.dark-mode .admin-panel select,
+.dark-mode .admin-panel textarea {
+  background-color: var(--navbar-dark);
+  color: var(--text-dark);
+  border-color: #363636;
+}
+.kolumn{
+  width: 70%;
+  margin-left:5px;
+  margin-right:5px;
+}
+
+
+@media screen and (max-width: 1023px) {
+  .navbar-brand img {
+    max-height: 3rem !important;
+  }
+  
+  .navbar {
+    min-height: 4rem !important;
+  }
+}
