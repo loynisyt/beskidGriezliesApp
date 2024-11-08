@@ -1,15 +1,16 @@
+// src/components/Trainings/DeleteTrainingModal.js
 import React from 'react';
 
-const DeleteUserModal = ({ user, onClose, onConfirm }) => {
-    if (!user) return null;
+const DeleteTrainingModal = ({ training, onClose, onConfirm }) => {
+    if (!training) return null;
 
     return (
         <div className="modal is-active">
             <div className="modal-background" onClick={onClose}></div>
             <div className="modal-content">
                 <div className="box">
-                    <h1 className="title">Delete User</h1>
-                    <p>Are you sure you want to delete the user <strong>{user.username}</strong>?</p>
+                    <h1 className="title">Delete Training</h1>
+                    <p>Are you sure you want to delete the training <strong>{training.title}</strong>?</p>
                     <div className="buttons">
                         <button className="button is-danger" onClick={onConfirm}>Delete</button>
                         <button className="button" onClick={onClose}>Cancel</button>
@@ -21,4 +22,4 @@ const DeleteUserModal = ({ user, onClose, onConfirm }) => {
     );
 };
 
-export default DeleteUserModal;
+export default DeleteTrainingModal;

@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import Home from './components/Home/Home';
@@ -11,13 +10,13 @@ import 'bulma/css/bulma.min.css';
 import './App.css';
 
 const App = () => {
-    const [user, setUser] = useState(null);
+    const [user, setUser ] = useState(null);
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
+        const storedUser  = localStorage.getItem('user');
+        if (storedUser ) {
+            setUser (JSON.parse(storedUser ));
         }
         const storedTheme = localStorage.getItem('theme');
         if (storedTheme === 'dark') {
@@ -27,12 +26,12 @@ const App = () => {
     }, []);
 
     const handleLogin = (userData) => {
-        setUser(userData);
+        setUser (userData);
         localStorage.setItem('user', JSON.stringify(userData));
     };
 
     const handleLogout = () => {
-        setUser(null);
+        setUser (null);
         localStorage.removeItem('user');
     };
 
@@ -47,8 +46,8 @@ const App = () => {
             <div className={`main-container ${isDarkMode ? 'dark-mode' : ''}`}>
                 <div className="content-wrapper">
                     <nav className="navbar" role="navigation" aria-label="main navigation">
-                        <div className="navbar-brand" >
-                            <Link className="navbar-item" to="/" >
+                        <div className="navbar-brand">
+                            <Link className="navbar-item" to="/">
                                 <img src="/beskid-griezlies-logo.png" alt="Beskid Griezlies" width="30" height="300" />
                             </Link>
                         </div>
@@ -79,8 +78,8 @@ const App = () => {
                     <Routes>
                         <Route path="/" element={<Home user={user} />} />
                         <Route path="/login" element={<Login onLogin={handleLogin} />} />
-                        <Route path="/matches" element={user ? <Matches /> : <Navigate to="/login" />} />
-                        <Route path="/trainings" element={user ? <Trainings /> : <Navigate to="/login" />} />
+                        <Route path="/matches" element={user ? <Matches user={user} /> : <Navigate to="/login" />} />
+                        <Route path="/trainings" element={user ? <Trainings user={user} /> : <Navigate to="/login" />} />
                         <Route path="/profile" element={user ? <Profile user={user} /> : <Navigate to="/login" />} />
                         <Route path="/admin" element={user && user.role === 'admin' ? <AdminPanel /> : <Navigate to="/" />} />
                     </Routes>

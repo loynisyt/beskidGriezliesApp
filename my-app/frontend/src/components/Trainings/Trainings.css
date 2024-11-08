@@ -1,0 +1,22 @@
+.trainings-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 20px;
+}
+
+.training-form {
+    flex: 1;
+    margin-right: 20px; /* Space between form and list */
+}
+
+.trainings-list {
+    flex: 2; /* Adjust the width of the trainings list */
+}
+.date-time-block {
+    background-color: #e0f7fa; /* Example color */
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-weight: bold;
+}

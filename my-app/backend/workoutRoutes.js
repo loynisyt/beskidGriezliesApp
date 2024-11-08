@@ -14,6 +14,40 @@ router.get('/', authMiddleware.verifyToken, async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+// backend/workoutRoutes.js
+
+// Get participants for a workout
+router.get('/:id/participants', authMiddleware.verifyToken, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query(
+            'SELECT users.username FROM workout_participants JOIN users ON workout_participants.user_id = users.id WHERE workout_participants.workout_id = $1',
+            [id]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// Participate in a workout
+router.post('/:id/participate', authMiddleware.verifyToken, async (req, res) => {
+    const { id } = req.params;
+    try {
+        const result = await pool.query(
+            'INSERT INTO workout_participants (workout_id, user_id) VALUES ($1, $2) ON CONFLICT (workout_id, user_id) DO NOTHING',
+            [id, req.user.id]
+        );
+        if (result.rowCount === 0) {
+            return res.status(400).json({ message: 'Already participating in this workout' });
+        }
+        res.json({ message: 'Successfully joined the workout' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 // Create a new workout (admin only)
 router.post('/', authMiddleware.verifyToken, authMiddleware.isAdmin, async (req, res) => {

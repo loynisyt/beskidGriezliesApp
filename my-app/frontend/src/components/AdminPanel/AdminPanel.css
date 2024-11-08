@@ -1,0 +1,26 @@
+.user-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0; /* Light gray border */
+}
+
+.user-name {
+    font-weight: bold; /* Make the username bold */
+    color: #333; /* Darker text color */
+}
+
+.delete-button {
+    background-color: #ff3860; /* Red background */
+    color: white; /* White text */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 5px 10px; /* Padding for button */
+    cursor: pointer; /* Change cursor to pointer */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.delete-button:hover {
+    background-color: #ff2b3a; /* Darker red on hover */
+}
