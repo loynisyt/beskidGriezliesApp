@@ -70,9 +70,9 @@ body.dark-mode {
   background-color: var(--hover-dark) !important;
 }
 
-.container {
-  padding: 2rem;
-}
+
+
+
 
 .dark-mode .title,
 .dark-mode .subtitle,

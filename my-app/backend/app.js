@@ -1,16 +1,18 @@
-// backend/app.js
 const express = require('express');
 const cors = require('cors');
+const app = express();
 const userRoutes = require('./userRoutes');
 const workoutRoutes = require('./workoutRoutes');
+const participantRoutes = require('./participantRoutes'); // Import participant routes
+const playersRoutes = require('./playerRoutes'); // Import player routes
 const authController = require('./controllers/authController');
-const pool = require('./db');
 
-const app = express();
+const pool = require('./db');
 
 // Logging middleware
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    console.log('Request Body:', req.body); // Log the request body
     next();
 });
 
@@ -31,11 +33,14 @@ app.post('/api/auth/register', authController.createUser);
 // Protected routes
 app.use('/api/users', userRoutes);
 app.use('/api/workouts', workoutRoutes);
+app.use('/api/participant', participantRoutes); // Use participant routes
+app.use('/api/profile', playersRoutes); // Use player routes
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ message: 'Something broke!' });
+    console.error('Error details:', err); // Detailed logging
+    res.status(500).json({ message: 'Something broke!', error: err.message });
 });
 
 const PORT = process.env.PORT || 5000;

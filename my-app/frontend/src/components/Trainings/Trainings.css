@@ -1,7 +1,5 @@
 .trainings-container {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
     margin-top: 20px;
 }
 
@@ -11,7 +9,7 @@
 }
 
 .trainings-list {
-    flex: 2; /* Adjust the width of the trainings list */
+    flex:1 ; /* Adjust the width of the trainings list */
 }
 .date-time-block {
     background-color: #e0f7fa; /* Example color */
@@ -19,4 +17,29 @@
     border-radius: 5px;
     margin-top: 10px;
     font-weight: bold;
+}
+
+.is-sticky{
+
+    position: sticky;
+   
+  }
+  .trainings-container{
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    
+  }
+  .training-item{
+    width: 80%;
+  }
+
+/* Add hover effects */
+.training-item:hover {
+    background-color: #f5f5f5;
+    transition: background-color 0.3s ease;
+}
+#addworkout{
+    transform: rotate(270deg);
+    margin:0
 }

@@ -6,6 +6,7 @@ import Trainings from './components/Trainings/Trainings';
 import Matches from './components/Matches/Matches';
 import Profile from './components/Profile/Profile';
 import AdminPanel from './components/AdminPanel/AdminPanel';
+import PlayersData from './components/Player/PlayersData';
 import 'bulma/css/bulma.min.css';
 import './App.css';
 
@@ -61,6 +62,9 @@ const App = () => {
                                         {user.role === 'admin' && (
                                             <Link className="navbar-item" to="/admin">Admin Panel</Link>
                                         )}
+                                        {user.role === 'admin' && (
+                                            <Link className="navbar-item" to="/players">Players Data</Link>
+                                        )}
                                         <a className="navbar-item" onClick={handleLogout}>Logout</a>
                                     </>
                                 ) : (
@@ -82,6 +86,7 @@ const App = () => {
                         <Route path="/trainings" element={user ? <Trainings user={user} /> : <Navigate to="/login" />} />
                         <Route path="/profile" element={user ? <Profile user={user} /> : <Navigate to="/login" />} />
                         <Route path="/admin" element={user && user.role === 'admin' ? <AdminPanel /> : <Navigate to="/" />} />
+                        <Route path="/players" element={user && user.role === 'admin' ? <PlayersData /> : <Navigate to="/players" />} />
                     </Routes>
                 </div>
             </div>

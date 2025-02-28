@@ -5,7 +5,7 @@ import DeleteUserModal from './DeleteUserModal'; // Correct import for DeleteUse
 const AdminPanel = () => {
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [newUser , setNewUser ] = useState({
+    const [newUser, setNewUser] = useState({
         username: '',
         password: '',
         firstName: '',
@@ -14,7 +14,7 @@ const AdminPanel = () => {
     });
     const [message, setMessage] = useState('');
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [userToDelete, setUser ] = useState(null); // Fixed the state variable name
+    const [userToDelete, setUser] = useState(null); // Fixed the state variable name
 
     useEffect(() => {
         fetchUsers();
@@ -24,10 +24,12 @@ const AdminPanel = () => {
         try {
             setIsLoading(true);
             const response = await fetch('http://localhost:5000/api/users', {
+                method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             });
+            console.log('Response status:', response.status);
             if (!response.ok) {
                 throw new Error('Failed to fetch users');
             }
@@ -47,7 +49,7 @@ const AdminPanel = () => {
         }
     };
 
-    const handleAddUser  = async (e) => {
+    const handleAddUser = async (e) => {
         e.preventDefault();
         try {
             const response = await fetch('http://localhost:5000/api/users/create', {
@@ -56,46 +58,47 @@ const AdminPanel = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify(newUser )
+                body: JSON.stringify(newUser)
             });
+            console.log('Response status for adding user:', response.status);
 
             if (response.ok) {
-                setMessage('User  created successfully');
-                setNewUser ({
+                setMessage('User created successfully');
+                setNewUser({
                     username: '',
                     password: '',
                     firstName: '',
                     lastName: '',
                     role: 'player'
                 });
-                fetchUsers();
+                fetchUsers(); // Refresh the user list
             } else {
                 const data = await response.json();
                 setMessage(data.message || 'Error creating user');
             }
         } catch (error) {
-            setMessage('Error creating user');
+            setMessage('Error creating user: ' + error.message);
         }
     };
 
     const openDeleteModal = (user) => {
-        setUser (user); // Correctly set the user to delete
+        setUser(user); // Correctly set the user to delete
         setDeleteModalOpen(true);
     };
     
     const closeDeleteModal = () => {
         setDeleteModalOpen(false);
-        setUser (null); // Reset the user to delete
+        setUser(null); // Reset the user to delete
     };
 
     const confirmDelete = async () => {
         if (userToDelete) {
-            await handleDeleteUser (userToDelete.id);
+            await handleDeleteUser(userToDelete.id);
             closeDeleteModal();
         }
     };
 
-    const handleDeleteUser  = async (userId) => {
+    const handleDeleteUser = async (userId) => {
         try {
             const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
                 method: 'DELETE',
@@ -105,14 +108,14 @@ const AdminPanel = () => {
             });
 
             if (response.ok) {
-                setMessage('User  deleted successfully');
+                setMessage('User deleted successfully');
                 fetchUsers();
             } else {
                 const data = await response.json();
                 setMessage(data.message || 'Error deleting user');
             }
         } catch (error) {
-            setMessage('Error deleting user');
+            setMessage('Error deleting user: ' + error.message);
         }
     };
 
@@ -127,7 +130,7 @@ const AdminPanel = () => {
             <div className="columns">
                 <div className="column is-half">
                     <h3 className="title is-4">Create New User Account</h3>
-                    <form onSubmit={handleAddUser }>
+                    <form onSubmit={handleAddUser}>
                         <div className="field">
                             <label className="label">Username</label>
                             <div className="control">
@@ -135,19 +138,19 @@ const AdminPanel = () => {
                                     className="input"
                                     type="text"
                                     value={newUser.username}
-                                    onChange={(e) => setNewUser ({ ...newUser , username: e.target.value })}
+                                    onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
                                     required
                                 />
                             </div>
                         </div>
                         <div className="field">
-<label className="label">Password</label>
+                            <label className="label">Password</label>
                             <div className="control">
                                 <input
                                     className="input"
                                     type="password"
                                     value={newUser.password}
-                                    onChange={(e) => setNewUser ({ ...newUser , password: e.target.value })}
+                                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
                                     required
                                 />
                             </div>
@@ -159,7 +162,7 @@ const AdminPanel = () => {
                                     className="input"
                                     type="text"
                                     value={newUser.firstName}
-                                    onChange={(e) => setNewUser ({ ...newUser , firstName: e.target.value })}
+                                    onChange={(e) => setNewUser({ ...newUser, firstName: e.target.value })}
                                     required
                                 />
                             </div>
@@ -171,7 +174,7 @@ const AdminPanel = () => {
                                     className="input"
                                     type="text"
                                     value={newUser.lastName}
-                                    onChange={(e) => setNewUser ({ ...newUser , lastName: e.target.value })}
+                                    onChange={(e) => setNewUser({ ...newUser, lastName: e.target.value })}
                                     required
                                 />
                             </div>
@@ -182,7 +185,7 @@ const AdminPanel = () => {
                                 <div className="select">
                                     <select
                                         value={newUser.role}
-                                        onChange={(e) => setNewUser ({ ...newUser , role: e.target.value })}
+                                        onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
                                     >
                                         <option value="player">Player</option>
                                         <option value="admin">Admin</option>
@@ -196,30 +199,30 @@ const AdminPanel = () => {
                     </form>
                 </div>
                 <div className="column is-half">
-                    <h3 className="title is-4">User  List</h3>
+                    <h3 className="title is-4">User List</h3>
                     {isLoading ? (
                         <p>Loading users...</p>
                     ) : (
                         <ul>
-    {users.map(user => (
-        <li key={user.id} className="user-list-item">
-            <span className="user-name">{user.username}</span>
-            <button className="delete-button" onClick={() => openDeleteModal(user)}>Delete</button>
-        </li>
-    ))}
-</ul>
+                            {users.map(user => (
+                                <li key={user.id} className="user-list-item">
+                                    <span className="user-name">{user.username}</span>
+                                    <button className="delete-button" onClick={() => openDeleteModal(user)}>Delete</button>
+                                </li>
+                            ))}
+                        </ul>
                     )}
                 </div>
             </div>
             {deleteModalOpen && (
-          <DeleteUserModal 
-          user={userToDelete} 
-          onClose={closeDeleteModal} 
-          onConfirm={confirmDelete} 
-         />
+                <DeleteUserModal 
+                    user={userToDelete} 
+                    onClose={closeDeleteModal} 
+                    onConfirm={confirmDelete} 
+                />
             )}
         </div>
     );
 };
 
-export default AdminPanel
+export default AdminPanel;

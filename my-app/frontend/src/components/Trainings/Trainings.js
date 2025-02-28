@@ -1,261 +1,155 @@
-import React, { useEffect, useState } from 'react';
-import './Trainings.css';
-import ParticipantsModal from './ParticipantsModal';
-import DeleteTrainingModal from './DeleteTrainingModal'; // Import the delete modal
+import React, { useState, useEffect, useRef } from 'react';
+import DeleteTrainingModal from './DeleteTrainingModal'; // Import DeleteTrainingModal
+import EditTrainingModal from './EditTrainingModal'; // Import EditTrainingModal
+import AddTrainingModal from './AddTrainingModal'; // Import AddTrainingModal
+import 'react-quill/dist/quill.snow.css'; // Import the styles for the editor
+import ReactQuill from 'react-quill'; // Import ReactQuill
+import './Trainings.css'; // Import the styles for the
 
-const Trainings = ({ user }) => {
-    const [trainings, setTrainings] = useState([]);
-    const [newTraining, setNewTraining] = useState({
-        title: '',
-        date: '',
-        time: '',
-        description: ''
-    });
-    const [participantsModalOpen, setParticipantsModalOpen] = useState(false);
-    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [currentParticipants, setCurrentParticipants] = useState([]);
-    const [trainingToDelete, setTrainingToDelete] = useState(null);
-    const [userParticipating, setUserParticipating] = useState({}); // Track user participation
 
-    useEffect(() => {
-        fetchTrainings();
-    }, []);
+const Trainings = () => {
+  const [trainings, setTrainings] = useState([]);
+  const user = JSON.parse(localStorage.getItem('user')); // Get user info
+  const [newTraining, setNewTraining] = useState({
+    title: '',
+    date: '',
+    time: '',
+    description_html: '', // Changed to description_html
+    created_by: user.id, // Add created_by field
+  });
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false); // State for AddTrainingModal
 
-    const fetchTrainings = async () => {
-        try {
-            const response = await fetch('http://localhost:5000/api/workouts', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            const data = await response.json();
-            if (Array.isArray(data)) {
-                const trainingsWithParticipants = await Promise.all(data.map(async (training) => {
-                    const participants = await fetchParticipants(training.id); // Fetch participants
-                    return { ...training, participants }; // Add participants to training
-                }));
-                setTrainings(trainingsWithParticipants);
-            } else {
-                console.error('Expected an array but got:', data);
-                setTrainings([]);
-            }
-        } catch (error) {
-            console.error('Error fetching trainings:', error);
-        }
-    };
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [trainingToEdit, setTrainingToEdit] = useState(null);
+  const [trainingToDelete, setTrainingToDelete] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const quillRef = useRef(null);
 
-    const fetchParticipants = async (trainingId) => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/workouts/${trainingId}/participants`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            return await response.json(); // Return participants
-        } catch (error) {
-            console.error('Error fetching participants:', error);
-            return []; // Return an empty array if there's an error
-        }
-    };
+  const fetchTrainings = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/workouts/workouts', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+    
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setTrainings(data);
+      } else {
+        console.error('Expected an array of trainings, but got:', data);
+        setTrainings([]);
+      }
+    } catch (error) {
+      console.error('Error fetching trainings:', error);
+      setTrainings([]); // Reset trainings on error
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleAddTraining = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await fetch('http://localhost:5000/api/workouts', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify(newTraining)
-            });
+  useEffect(() => {
+    fetchTrainings(); // Fetch trainings on mount
+  }, []);
 
-            if (response.ok) {
-                setNewTraining({
-                    title: '',
-                    date: '',
-                    time: '',
-                    description: ''
-                });
-                fetchTrainings(); // Refresh the trainings list
-            } else {
-                const data = await response.json();
-                console.error(data.message || 'Error creating training');
-            }
-        } catch (error) {
-            console.error('Error creating training:', error);
-        }
-    };
+  
 
-    const handleParticipate = async (trainingId) => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/workouts/${trainingId}/participate`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+  const handleEditTraining = (training) => {
+    setTrainingToEdit(training);
+    setEditModalOpen(true);
+  };
 
-            if (response.ok) {
-                setUserParticipating(prev => ({ ...prev, [trainingId]: true })); // Update participation status
-                alert('Successfully joined the training!');
-                fetchTrainings(); // Refresh the trainings list
-            } else {
-                const data = await response.json();
-                console.error(data.message || 'Error joining training');
-            }
-        } catch (error) {
-            console.error('Error joining training:', error);
-        }
-    };
+  
 
-    const handleUnparticipate = async (trainingId) => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/workouts/${trainingId}/unparticipate`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+  const handleDeleteTraining = (id) => {
+    setTrainingToDelete(id);
+    setDeleteModalOpen(true);
+  };
 
-            if (response.ok) {
-                setUserParticipating(prev => ({ ...prev, [trainingId]: false })); // Update participation status
-                alert('Successfully left the training!');
-                fetchTrainings(); // Refresh the trainings list
-            } else {
-                const data = await response.json();
-                console.error(data.message || 'Error leaving training');
-            }
-        } catch (error) {
-            console.error('Error leaving training:', error);
-        }
-    };
+  const confirmDeleteTraining = async () => {
+    if (trainingToDelete) {
+      try {
+        const token = localStorage.getItem('token');
+        await fetch(`http://localhost:5000/api/workouts/workouts/${trainingToDelete}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        setTrainings(trainings.filter(training => training.id !== trainingToDelete));
+        setDeleteModalOpen(false);
+      } catch (error) {
+        console.error('Error deleting training:', error);
+      }
+    }
+  };
 
-    const handleDeleteTraining = async (trainingId) => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/workouts/${trainingId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+  return (
+    <div className="container">
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
 
-            if (response.ok) {
-                fetchTrainings(); // Refresh the trainings list after deletion
-                setDeleteModalOpen(false); // Close the delete modal
-            } else {
-                const data = await response.json();
-                console.error(data.message || 'Error deleting training');
-            }
-        } catch (error) {
-            console.error('Error deleting training:', error);
-        }
-    };
+        
+        
+        <div>
+          <button className="button is-primary is-sticky mt-3"  onClick={() => setAddModalOpen(true)}>
+            Add Workout
+          </button>
+          <h2 className="title is-2 has-text-centered my-5">Workouts List 
 
-    const handleShowParticipants = (participants) => {
-        setCurrentParticipants(participants);
-        setParticipantsModalOpen(true);
-    };
+          
 
-    const formatDateTime = (dateTime) => {
-        const date = new Date(dateTime);
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        const formattedDate = date.toLocaleDateString(undefined, options);
-        const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        return { formattedDate, formattedTime };
-    };
-
-    return (
-        <div className="container">
-            <h2 className="title is-2 has-text-centered my-5">Manage Trainings</h2>
-
-            <div className="trainings-container">
-                {user.role === 'admin' && (
-                    <form onSubmit={handleAddTraining} className="training-form">
-                        <h3 className="title is-4">Create New Training</h3>
-                        <div className="field">
-                            <label className="label">Title</label>
-                            <input
-                                className="input"
-                                type="text"
-                                value={newTraining.title}
-                                onChange={(e) => setNewTraining({ ...newTraining, title: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div className="field">
-                            <label className="label">Date</label>
-                            <input
-                                className="input"
-                                type="date"
-                                value={newTraining.date}
-                                onChange={(e) => setNewTraining({ ...newTraining, date: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div className="field">
-                            <label className="label">Time</label>
-                            <input
-                                className="input"
-                                type="time"
-                                value={newTraining.time}
-                                onChange={(e) => setNewTraining({ ...newTraining, time: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div className="field">
-                            <label className="label">Description</label>
-                            <textarea
-                                className="textarea"
-                                value={newTraining.description}
-                                onChange={(e) => setNewTraining({ ...newTraining, description: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <button className="button is-primary" type="submit">Create Training</button>
-                    </form>
-                )}
-
-                <div className="trainings-list">
-                    < h3 className="title is-4">Available Trainings</h3>
-                    {trainings.map(training => {
-                        const { formattedDate, formattedTime } = formatDateTime(training.date);
-                        const isParticipating = userParticipating[training.id] || false; // Check if user is participating
-                        return (
-                            <div key={training.id} className="training-item">
-                                <h4 className="title is-5">{training.title}</h4>
-                                <p>{training.description}</p>
-                                <div className="date-time-block" style={{ backgroundColor: '#f0f0f0', padding: '10px', borderRadius: '5px' }}>
-                                    <p>{formattedDate}</p>
-                                    <p>{formattedTime}</p>
-                                </div>
-                                <br></br>
-                                <button className="button is-success" onClick={() => isParticipating ? handleUnparticipate(training.id) : handleParticipate(training.id)}>
-                                    {isParticipating ? 'Unparticipate' : 'Participate'}
-                                </button>
-                                <button className="button is-info" onClick={() => handleShowParticipants(training.participants)}>Show Participants</button>
-                                {user.role === 'admin' && (
-                                    <button className="button is-danger" onClick={() => { setTrainingToDelete(training); setDeleteModalOpen(true); }}>Delete Training</button>
-                                )}
-                            </div>
-                        );
-                    })}
+          </h2>
+          
+          <div className="trainings-container">
+            {trainings.map((training) => (
+              <div key={training.id} className="training-item mt-5">
+                <div className='box'>
+                  <h4 className="title is-5 has-text-weight-bold">{training.title}</h4>
+                  <p className='label has-text-centered'>{training.date} at {training.time}</p>
+                  <p className='label' dangerouslySetInnerHTML={{ __html: training.description_html }} /> {/* Displaying HTML content */}
+                  <button onClick={() => handleEditTraining(training)} className="button is-warning">Edit</button>
+                  {user.role === 'admin' && (
+                    <button onClick={() => handleDeleteTraining(training.id)} className="button is-danger">Delete</button>
+                  )}
                 </div>
-            </div>
-
-            {participantsModalOpen && (
-                <ParticipantsModal participants={currentParticipants} onClose={() => setParticipantsModalOpen(false)} />
+              </div>
+            ))}
+            {addModalOpen && (
+              <AddTrainingModal
+                onClose={() => setAddModalOpen(false)}
+                onAdd={(newTraining) => {
+                  setTrainings([...trainings, newTraining]);
+                  setAddModalOpen(false);
+                }}
+              />
             )}
+            
+          </div>
 
-            {deleteModalOpen && (
-                <DeleteTrainingModal 
-                    training={trainingToDelete} 
-                    onClose={() => setDeleteModalOpen(false)} 
-                    onConfirm={() => handleDeleteTraining(trainingToDelete.id)} 
-                />
-            )}
+          {/* Modals */}
+          {editModalOpen && (
+            <EditTrainingModal
+              training={trainingToEdit}
+              onClose={() => setEditModalOpen(false)}
+              onUpdate={fetchTrainings}
+            />
+          )}
+          {deleteModalOpen && (
+            <DeleteTrainingModal
+              training={trainings.find(t => t.id === trainingToDelete)}
+              onClose={() => setDeleteModalOpen(false)}
+              onConfirm={confirmDeleteTraining}
+            />
+          )}
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default Trainings;

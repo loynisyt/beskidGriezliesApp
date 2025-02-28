@@ -3,10 +3,14 @@ import './Profile.css';
 
 const Profile = ({ user }) => {
   const [editableUser, setEditableUser] = useState({
-    fullName: '',
+    firstName: '',
+    lastName: '',
     position: '',
     height: '',
     weight: '',
+    username: '',
+    password: '',
+    role: '',
     email: '',
     phone: '',
     jerseyNumber: ''
@@ -16,16 +20,31 @@ const Profile = ({ user }) => {
 
   const fetchUserProfile = useCallback(async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/profile/${user.id}`, {
+      const response = await fetch(`http://localhost:5000/api/profile/user/${user.id}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+          
+
         }
       });
       if (!response.ok) {
         throw new Error('Failed to fetch profile');
       }
       const data = await response.json();
-      setEditableUser(data);
+      setEditableUser({
+        firstName: data.first_name,
+        lastName: data.last_name,
+        position: data.position,
+        height: data.height,
+        weight: data.weight,
+        username: data.username,
+        password: data.password,
+        role: data.role,
+        email: data.email,
+        phone: data.phone,
+        jerseyNumber: data.jersey_number
+      });
     } catch (error) {
       setMessage('Error loading profile: ' + error.message);
     }
@@ -33,7 +52,7 @@ const Profile = ({ user }) => {
 
   useEffect(() => {
     fetchUserProfile();
-  }, [fetchUserProfile])
+  }, [fetchUserProfile]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,7 +68,19 @@ const Profile = ({ user }) => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
-        body: JSON.stringify(editableUser)
+        body: JSON.stringify({
+          first_name: editableUser.firstName,
+          last_name: editableUser.lastName,
+          position: editableUser.position,
+          height: editableUser.height,
+          weight: editableUser.weight,
+          username: editableUser.username,
+          password: editableUser.password,
+          role: editableUser.role,
+          email: editableUser.email,
+          phone: editableUser.phone,
+          jersey_number: editableUser.jerseyNumber,
+        })
       });
 
       if (response.ok) {
@@ -80,8 +111,8 @@ const Profile = ({ user }) => {
                 <div className="control">
                   <input
                     className="input"
-                    name="fullName"
-                    value={editableUser.fullName}
+                    name="firstName"
+                    value={editableUser.firstName}
                     onChange={handleChange}
                     disabled={!isEditing}
                     required
@@ -196,13 +227,18 @@ const Profile = ({ user }) => {
                 <button
                   type="button"
                   className="button is-primary"
-                  onClick={() => setIsEditing(true)}
+                    onClick={(e) => {
+                      e.preventDefault(); // Prevent default form submission
+                      setIsEditing(true);
+                    }}
+
                 >
                   Edit Profile
                 </button>
               ) : (
                 <>
-                  <button type="submit" className="button is-success mr-2">
+                  <button type="submit" className="button is-success mr-2" disabled={!isEditing}>
+
                     Save Changes
                   </button>
                   <button
@@ -219,9 +255,9 @@ const Profile = ({ user }) => {
               )}
             </div>
           </div>
-        </form>
-      </div>
-    </div>
+            </form>
+          </div>
+        </div>
   );
 };
 
