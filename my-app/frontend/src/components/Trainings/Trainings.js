@@ -26,6 +26,8 @@ const Trainings = () => {
   const [loading, setLoading] = useState(false);
   const quillRef = useRef(null);
 
+  const [sortOption, setSortOption] = useState('lastModified'); // State for sorting option
+
   const fetchTrainings = async () => {
     setLoading(true);
     try {
@@ -55,14 +57,10 @@ const Trainings = () => {
     fetchTrainings(); // Fetch trainings on mount
   }, []);
 
-  
-
   const handleEditTraining = (training) => {
     setTrainingToEdit(training);
     setEditModalOpen(true);
   };
-
-  
 
   const handleDeleteTraining = (id) => {
     setTrainingToDelete(id);
@@ -87,30 +85,73 @@ const Trainings = () => {
     }
   };
 
+  const formatDateTime = (dateString) => {
+    const date = new Date(`${dateString}T${time}`); // Combine date and time for correct parsing
+
+
+
+    if (isNaN(date)) {
+      console.error('Invalid date:', dateString);
+      return 'Invalid Date';
+    }
+    const formattedDate = date.toLocaleDateString('en-GB'); // Format as DD.MM.YYYY
+    const formattedTime = date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format as HH:MM with AM/PM
+
+    return `${formattedDate} ${formattedTime}`;
+  };
+
+  const sortedTrainings = [...trainings].sort((a, b) => {
+
+    switch (sortOption) {
+      case 'lastModified':
+        return new Date(b.updatedAt) - new Date(a.updatedAt); // Assuming updatedAt is the last modified date
+      case 'newest':
+        return new Date(b.date) - new Date(a.date);
+      case 'oldest':
+        return new Date(a.date) - new Date(b.date);
+      case 'title':
+        return a.title.localeCompare(b.title);
+      case 'upcoming':
+        return new Date(a.date) - new Date(b.date); // Sort by upcoming date
+      default:
+        return 0;
+    }
+  }).filter(training => new Date(training.date) >= new Date()); // Filter out past workouts
+
   return (
     <div className="container">
+      <div className="field">
+        <label className="label">Sort By:</label>
+        <div className="control">
+          <div className="select">
+            <select value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+              <option value="lastModified">Last Modified</option>
+              <option value="newest">Date: Newest</option>
+              <option value="oldest">Date: Oldest</option>
+              <option value="title">Title</option>
+              <option value="upcoming">First Upcoming</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       {loading ? (
         <p>Loading...</p>
       ) : (
-
-        
-        
         <div>
-          <button className="button is-primary is-sticky mt-3"  onClick={() => setAddModalOpen(true)}>
+          <button className="button is-primary is-sticky mt-3" onClick={() => setAddModalOpen(true)}>
             Add Workout
           </button>
-          <h2 className="title is-2 has-text-centered my-5">Workouts List 
-
-          
-
-          </h2>
-          
+          <h2 className="title is-2 has-text-centered my-5">Workouts List</h2>
           <div className="trainings-container">
-            {trainings.map((training) => (
+            {sortedTrainings.map((training) => (
               <div key={training.id} className="training-item mt-5">
                 <div className='box'>
                   <h4 className="title is-5 has-text-weight-bold">{training.title}</h4>
-                  <p className='label has-text-centered'>{training.date} at {training.time}</p>
+                  <p className='label has-text-centered'>{formatDateTime(training.date, training.time)}</p>
+
+
+
                   <p className='label' dangerouslySetInnerHTML={{ __html: training.description_html }} /> {/* Displaying HTML content */}
                   <button onClick={() => handleEditTraining(training)} className="button is-warning">Edit</button>
                   {user.role === 'admin' && (
@@ -128,7 +169,6 @@ const Trainings = () => {
                 }}
               />
             )}
-            
           </div>
 
           {/* Modals */}

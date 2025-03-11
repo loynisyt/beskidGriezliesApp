@@ -1,3 +1,9 @@
+
+
+
+
+
+
 CREATE TABLE IF NOT EXISTS workouts (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
