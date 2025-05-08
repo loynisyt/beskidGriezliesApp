@@ -6,6 +6,7 @@ const workoutRoutes = require('./workoutRoutes');
 const participantRoutes = require('./participantRoutes'); // Import participant routes
 const playersRoutes = require('./playerRoutes'); // Import player routes
 const authController = require('./controllers/authController');
+const emailRoutes = require("./emailRoutes");
 
 const pool = require('./db');
 
@@ -35,6 +36,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/participant', participantRoutes); // Use participant routes
 app.use('/api/profile', playersRoutes); // Use player routes
+app.use("/api/email", emailRoutes);
 
 
 // Error handling middleware

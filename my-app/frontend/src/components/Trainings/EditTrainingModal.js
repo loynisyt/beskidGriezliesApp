@@ -9,6 +9,7 @@ const EditTrainingModal = ({ training, onClose, onUpdate }) => {
         date: '',
         time: '',
         description_html: '', // Change to description_html
+        season: 1, // Default season 1
     });
 
     useEffect(() => {
@@ -18,13 +19,13 @@ const EditTrainingModal = ({ training, onClose, onUpdate }) => {
                 date: training.date.split('T')[0], // Format date for input
                 time: training.time,
                 description_html: training.description_html, // Change to description_html
+                season: training.season || 1,
             });
         }
     }, [training]);
 
     const handleUpdateTraining = async (e) => {
         e.preventDefault();
-      //  console.log('Updated Training Data before PUT:', updatedTraining); // DLA TESTOWANIA
         try {
             const response = await fetch(`http://localhost:5000/api/workouts/workouts/${training.id}`, {
                 method: 'PUT',
@@ -36,10 +37,11 @@ const EditTrainingModal = ({ training, onClose, onUpdate }) => {
                     title: updatedTraining.title,
                     date: updatedTraining.date,
                     time: updatedTraining.time,
-                    description_html: updatedTraining.description_html // Ensure this matches the backend
+                    description_html: updatedTraining.description_html, // Ensure this matches the backend
+                    season: updatedTraining.season,
                 })
             });
-    
+
             if (response.ok) {
                 onUpdate();
                 onClose();
@@ -85,10 +87,28 @@ const EditTrainingModal = ({ training, onClose, onUpdate }) => {
                             <input
                                 className="input"
                                 type="time"
+                                min="07:00"
+                                max="22:00"
                                 value={updatedTraining.time}
                                 onChange={(e) => setUpdatedTraining({ ...updatedTraining, time: e.target.value })}
                                 required
                             />
+                        </div>
+                        <div className="field">
+                            <label className="label">Season</label>
+                            <div className="control">
+                                <div className="select">
+                                    <select
+                                        value={updatedTraining.season}
+                                        onChange={(e) => setUpdatedTraining({ ...updatedTraining, season: parseInt(e.target.value) })}
+                                    >
+                                        <option value={1}>Season 1</option>
+                                        <option value={2}>Season 2</option>
+                                        <option value={3}>Season 3</option>
+                                        <option value={4}>Season 4</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         <div className="field">
                             <label className="label">Description</label>
@@ -99,7 +119,7 @@ const EditTrainingModal = ({ training, onClose, onUpdate }) => {
                                 required
                             />
                         </div>
-                       
+
                         <button className="button is-primary" type="submit">Save Training</button>
                     </form>
                 </div>

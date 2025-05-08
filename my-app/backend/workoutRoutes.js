@@ -4,12 +4,12 @@ const pool = require('./db');
 
 // Add a new workout
 router.post('/add', async (req, res) => {
-    const { title, description_html, created_by, date, time } = req.body; 
+    const { title, description_html, created_by, date, time, season } = req.body; 
 
     try {
         const newWorkout = await pool.query(
-            'INSERT INTO workouts (title, description_html, created_by, date, time) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [title, description_html, created_by, date, time]
+            'INSERT INTO workouts (title, description_html, created_by, date, time, season) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [title, description_html, created_by, date, time, season]
         );
         res.json(newWorkout.rows[0]);
     } catch (err) {
@@ -32,12 +32,12 @@ router.get('/workouts', async (req, res) => {
 // Edit a workout
 router.put('/workouts/:id', async (req, res) => {
     const { id } = req.params;
-    const { title, description_html, date, time } = req.body;
+    const { title, description_html, date, time, season } = req.body;
 
     try {
         const updateWorkout = await pool.query(
-            'UPDATE workouts SET title = $1, description_html = $2, date = $3, time = $4 WHERE id = $5 RETURNING *',
-            [title, description_html, date, time, id]
+            'UPDATE workouts SET title = $1, description_html = $2, date = $3, time = $4, season = $5 WHERE id = $6 RETURNING *',
+            [title, description_html, date, time, season, id]
         );
         if (updateWorkout.rowCount === 0) {
             return res.status(404).json({ error: 'Workout not found' });
@@ -46,7 +46,7 @@ router.put('/workouts/:id', async (req, res) => {
 
     } catch (err) {
         console.error('Error updating workout:', err); // Log the error details
-        res.status(500).send(  'Server error'); 
+        res.status(500).send('Server error'); 
     }
 });
 

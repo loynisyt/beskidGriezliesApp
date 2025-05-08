@@ -40,7 +40,7 @@ const Login = ({ onLogin }) => {
                 // Update app state
                 onLogin(data.user);
                 // Redirect to home
-                navigate('/');
+                navigate('/home');
             } else {
                 throw new Error('Invalid response format');
             }

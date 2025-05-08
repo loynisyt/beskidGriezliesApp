@@ -2,6 +2,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../db');
+const tokenService = require('../tokenService');
 
 exports.login = async (req, res) => {
     try {
@@ -38,6 +39,9 @@ exports.login = async (req, res) => {
             process.env.JWT_SECRET || 'your_jwt_secret',
             { expiresIn: '24h' }
         );
+
+        // Store token in DB
+        await tokenService.storeToken(user.id, token);
 
         // Send response
         res.json({

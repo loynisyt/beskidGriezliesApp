@@ -1,4 +1,3 @@
-// src/components/Trainings/ParticipantsModal.js
 import React from 'react';
 
 const ParticipantsModal = ({ participants, onClose }) => {
@@ -10,7 +9,7 @@ const ParticipantsModal = ({ participants, onClose }) => {
                     <h1 className="title">Participants</h1>
                     <ul>
                         {participants.map((participant, index) => (
-                            <li key={index}>{participant.username}</li>
+                            <li key={index}> {participant.first_name} {participant.last_name} </li>
                         ))}
                     </ul>
                     <p>Total Participants: {participants.length}</p>

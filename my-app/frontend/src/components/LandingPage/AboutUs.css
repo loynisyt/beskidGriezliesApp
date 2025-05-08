@@ -1,0 +1,52 @@
+.aboutus-section {
+  max-width: 900px;
+  margin: 120px auto 60px auto;
+  padding: 20px;
+  background-color: rgba(255,255,255,0.9);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  color: #005fa3;
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+}
+
+.aboutus-section h2 {
+  color: #007acc;
+  margin-bottom: 25px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.aboutus-section p {
+  font-size: 18px;
+  line-height: 1.8;
+  margin-bottom: 20px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.aboutus-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.aboutus-gallery img {
+  width: 160px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.aboutus-gallery img:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+}

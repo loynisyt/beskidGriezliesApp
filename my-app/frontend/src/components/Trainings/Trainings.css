@@ -32,14 +32,65 @@
   }
   .training-item{
     width: 80%;
+    min-height: 180px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    transition: opacity 0.3s ease;
   }
 
-/* Add hover effects */
-.training-item:hover {
+
+
+  /* Hover effects */
+  .training-item:hover {
     background-color: #f5f5f5;
     transition: background-color 0.3s ease;
-}
-#addworkout{
+  }
+
+  #addworkout{
     transform: rotate(270deg);
     margin:0
-}
+  }
+
+  /* Outdated workouts styling to match current workouts */
+  .outdated-workouts-container .box {
+    width: 80%;
+    min-height: 180px;
+    margin: 0 auto 20px auto;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .buttonContainer{
+    flex-direction: row;
+
+  }
+  .button{
+    margin: 5px;
+    padding: 5px;
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 729px) {
+    .training-item {
+      width: 95%;
+      min-height: auto;
+    }
+    .training-item .box {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+    .box .button{
+        width: 40%;
+    }
+
+   
+
+    .outdated-workouts-container .box {
+      width: 95%;
+      min-height: auto;
+      padding: 10px;
+    }
+  }

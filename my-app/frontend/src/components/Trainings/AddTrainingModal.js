@@ -8,6 +8,7 @@ const AddTrainingModal = ({ onClose, onAdd }) => {
         date: '',
         time: '',
         description_html: '', // Changed to description_html
+        season: 1, // Default season 1
     });
     const quillRef = useRef(null);
 
@@ -38,7 +39,7 @@ const AddTrainingModal = ({ onClose, onAdd }) => {
             if (response.ok) {
                 onAdd(data); // Pass the new training data back to the parent
                 onClose(); // Close the modal
-                setNewTraining({ title: '', date: '', time: '', description_html: '' }); // Reset form
+                setNewTraining({ title: '', date: '', time: '', description_html: '', season: 1 }); // Reset form
             } else {
                 console.error(data.message || 'Error adding training');
             }
@@ -79,10 +80,28 @@ const AddTrainingModal = ({ onClose, onAdd }) => {
                             <input
                                 className="input"
                                 type="time"
+                                min="07:00"
+                                max="22:00"
                                 value={newTraining.time}
                                 onChange={(e) => setNewTraining({ ...newTraining, time: e.target.value })}
                                 required
                             />
+                        </div>
+                        <div className="field">
+                            <label className="label">Season</label>
+                            <div className="control">
+                                <div className="select">
+                                    <select
+                                        value={newTraining.season}
+                                        onChange={(e) => setNewTraining({ ...newTraining, season: parseInt(e.target.value) })}
+                                    >
+                                        <option value={1}>Season 1</option>
+                                        <option value={2}>Season 2</option>
+                                        <option value={3}>Season 3</option>
+                                        <option value={4}>Season 4</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         <div className="field">
                             <label className="label">Description</label>

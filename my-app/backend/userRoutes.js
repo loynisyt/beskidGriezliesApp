@@ -2,6 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('./db');
+const axios = require("axios");
+
 const bcrypt = require('bcrypt');
 const authMiddleware = require('./authMiddleware');
 
@@ -38,6 +40,17 @@ router.get('/profile/:id', authMiddleware.verifyToken, async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+
+
+router.get("/proxy/statistics", async (req, res) => {
+    try {
+      const response = await axios.get("https://ligazlk.bieda.it/statistics");
+      res.json(response.data); // Forward the data to the frontend
+    } catch (error) {
+      console.error("Error fetching data from external API:", error.message);
+      res.status(500).json({ message: "Error fetching data from external API" });
+    }
+  });
 
 // Create new user (admin only)
 router.post('/create', authMiddleware.verifyToken, authMiddleware.isAdmin, async (req, res) => {

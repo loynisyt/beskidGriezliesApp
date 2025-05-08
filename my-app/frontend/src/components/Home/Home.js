@@ -9,19 +9,19 @@ const Home = ({ user }) => {
       <div className="columns is-rows">
         <div className="kolumn">
           <Link to="/trainings" className="home-button">
-            <img src="/path-to-cone-icon.png" alt="Treningi" />
+            <img src="/public/icon/workout.png" alt="Treningi" />
             <span>Treningi</span>
           </Link>
         </div>
         <div className="kolumn">
           <Link to="/matches" className="home-button">
-            <img src="/path-to-ball-icon.png" alt="Mecze" />
+            <img src="/public/icon/match.png" alt="Mecze" />
             <span>Mecze</span>
           </Link>
         </div>
         <div className="kolumn">
           <Link to="/profile" className="home-button">
-            <img src="/path-to-profile-icon.png" alt="Twój Profil" />
+            <img src="/public/icon/profile.png" alt="Twój Profil" />
             <span>Twój Profil</span>
           </Link>
         </div>

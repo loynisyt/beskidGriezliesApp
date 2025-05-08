@@ -1,0 +1,317 @@
+.logo-icon {
+  width: px;
+  height: 60px;
+}
+
+.landing-container {
+  font-family: 'Arial', sans-serif;
+  color: #005fa3;
+  background-color: transparent;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  z-index: 1;
+  padding-top: 100px; /* to render content lower below fixed navbar */
+}
+
+.background-slideshow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+  filter: blur(15px) brightness(0.6);
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+
+.slide.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.landing-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: white;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  margin-bottom: 20px;
+}
+
+.logo-icon.large-logo {
+  width: 95px;
+  height: auto;
+}
+
+.nav-right {
+  display: flex;
+  gap: 10px;
+}
+
+.nav-button {
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #007acc;
+  border: 2px solid #007acc;
+  background-color: transparent;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-button:hover {
+  background-color: #007acc;
+  color: white;
+  border-color: #007acc;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 24px;
+  margin-right: 40px;
+  color: #007acc;
+  
+}
+
+.nav-menu {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-menu li a {
+  text-decoration: none;
+  color: #005fa3;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.nav-menu li a:hover {
+  color: #007acc;
+}
+
+.nav-right .login-button {
+  background-color: #007acc;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.nav-right .login-button:hover {
+  background-color: #005fa3;
+}
+
+.animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #a0c4ff, #bdb2ff);
+}
+
+.moving-shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.shape1 {
+  width: 200px;
+  height: 200px;
+  background: #007acc;
+  top: 10%;
+  left: 15%;
+  animation-name: move1;
+  animation-duration: 15s;
+}
+
+.shape2 {
+  width: 300px;
+  height: 300px;
+  background: #005fa3;
+  top: 50%;
+  left: 70%;
+  animation-name: move2;
+  animation-duration: 20s;
+}
+
+.shape3 {
+  width: 150px;
+  height: 150px;
+  background: #0096c7;
+  top: 75%;
+  left: 30%;
+  animation-name: move3;
+  animation-duration: 18s;
+}
+
+@keyframes move1 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, 20px); }
+}
+
+@keyframes move2 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-40px, 30px); }
+}
+
+@keyframes move3 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -30px); }
+}
+
+.section {
+  max-width: 900px;
+  margin: 120px auto 60px auto;
+  padding: 20px;
+  background-color: rgba(255,255,255,0.85);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.section h2 {
+  color: #007acc;
+  margin-bottom: 15px;
+}
+
+.section p, .section ul {
+  color: #005fa3;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.section ul {
+  padding-left: 20px;
+}
+
+.section ul li {
+  margin-bottom: 10px;
+}
+
+/* Hide main navbar menu on landing page */
+body.landing-page .navbar-menu {
+  display: none !important;
+}
+
+/* Additional animations inspired by 21st.dev */
+
+.animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #a0c4ff, #bdb2ff);
+}
+
+.moving-shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.shape1 {
+  width: 200px;
+  height: 200px;
+  background: #007acc;
+  top: 10%;
+  left: 15%;
+  animation-name: move1;
+  animation-duration: 15s;
+}
+
+.shape2 {
+  width: 300px;
+  height: 300px;
+  background: #005fa3;
+  top: 50%;
+  left: 70%;
+  animation-name: move2;
+  animation-duration: 20s;
+}
+
+.shape3 {
+  width: 150px;
+  height: 150px;
+  background: #0096c7;
+  top: 75%;
+  left: 30%;
+  animation-name: move3;
+  animation-duration: 18s;
+}
+
+@keyframes move1 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, 20px); }
+}
+
+@keyframes move2 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-40px, 30px); }
+}
+
+@keyframes move3 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -30px); }
+}
+
+/* Additional animations inspired by 21st.dev */
+
+.floating-shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.4;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  background: #007acc;
+  width: 100px;
+  height: 100px;
+  top: 30%;
+  left: 50%;
+  animation-name: float;
+  animation-duration: 25s;
+  z-index: 0;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-40px); }
+}

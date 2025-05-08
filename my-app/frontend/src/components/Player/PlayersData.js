@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import EditPlayerModal from './EditPlayerModal'; // Import the EditPlayerModal
+import AttendanceModal from './AttendanceModal'; // Import AttendanceModal
 import './PlayersData.css'; // Assuming you will create a CSS file for styling
 
 const PlayersData = () => {
@@ -9,6 +10,7 @@ const PlayersData = () => {
 
   const [selectedPlayer, setSelectedPlayer] = useState(null); // State for selected player
   const [isEditing, setIsEditing] = useState(false); // State for editing mode
+  const [attendanceModalOpen, setAttendanceModalOpen] = useState(false); // State for attendance modal
 
   const fetchPlayersData = async () => { // Fetch players data
     try {
@@ -29,7 +31,6 @@ const PlayersData = () => {
     }
   };
 
-
   useEffect(() => {
     fetchPlayersData();
   }, []);
@@ -37,6 +38,9 @@ const PlayersData = () => {
   return (
     <div className="players-data-container">
       <h2 className="title is-2">Players Data</h2>
+      <button className="button is-info mb-3" onClick={() => setAttendanceModalOpen(true)}>
+        Show Attendance Percentage
+      </button>
       {loading && <p>Loading...</p>}
       {error && <div className="notification is-danger">{error}</div>}
       {!loading && !error && (
@@ -81,6 +85,11 @@ const PlayersData = () => {
           player={selectedPlayer}
           onClose={() => setIsEditing(false)}
           onUpdate={fetchPlayersData} // Refresh players data after update
+        />
+      )}
+      {attendanceModalOpen && (
+        <AttendanceModal
+          onClose={() => setAttendanceModalOpen(false)}
         />
       )}
     </div>

@@ -1,0 +1,21 @@
+.contact-section {
+  max-width: 900px;
+  margin: 60px auto 60px auto;
+  padding: 20px;
+  background-color: rgba(255,255,255,0.85);
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  color: #005fa3;
+  font-family: 'Arial', sans-serif;
+}
+
+.contact-section h2 {
+  color: #007acc;
+  margin-bottom: 15px;
+}
+
+.contact-section p {
+  font-size: 16px;
+  line-height: 1.5;
+}
+

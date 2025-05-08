@@ -1,130 +1,231 @@
 import React, { useState, useEffect, useRef } from 'react';
-import DeleteTrainingModal from './DeleteTrainingModal'; // Import DeleteTrainingModal
-import EditTrainingModal from './EditTrainingModal'; // Import EditTrainingModal
-import AddTrainingModal from './AddTrainingModal'; // Import AddTrainingModal
-import 'react-quill/dist/quill.snow.css'; // Import the styles for the editor
-import ReactQuill from 'react-quill'; // Import ReactQuill
-import './Trainings.css'; // Import the styles for the
-
+import DeleteTrainingModal from './DeleteTrainingModal';
+import EditTrainingModal from './EditTrainingModal';
+import AddTrainingModal from './AddTrainingModal';
+import ParticipantsModal from './ParticipantsModal';
+import 'react-quill/dist/quill.snow.css';
+import ReactQuill from 'react-quill';
+import './Trainings.css';
+import OutdatedWorkouts from './OutdatedWorkouts';
 
 const Trainings = () => {
   const [trainings, setTrainings] = useState([]);
-  const user = JSON.parse(localStorage.getItem('user')); // Get user info
+  const [outdatedTrainings, setOutdatedTrainings] = useState([]);
+  const [participationStatus, setParticipationStatus] = useState({});
+  const [participantsModalOpen, setParticipantsModalOpen] = useState(false);
+  const [participantsList, setParticipantsList] = useState([]);
+  const [selectedWorkoutId, setSelectedWorkoutId] = useState(null);
+  const user = JSON.parse(localStorage.getItem('user'));
   const [newTraining, setNewTraining] = useState({
     title: '',
     date: '',
     time: '',
-    description_html: '', // Changed to description_html
-    created_by: user.id, // Add created_by field
+    description_html: '',
+    season: 1,
+    created_by: user.id,
   });
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [addModalOpen, setAddModalOpen] = useState(false); // State for AddTrainingModal
-
+  const [addModalOpen, setAddModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [trainingToEdit, setTrainingToEdit] = useState(null);
   const [trainingToDelete, setTrainingToDelete] = useState(null);
   const [loading, setLoading] = useState(false);
-  const quillRef = useRef(null);
-
-  const [sortOption, setSortOption] = useState('lastModified'); // State for sorting option
+  const [sortOption, setSortOption] = useState('lastModified');
+  const [selectedSeason, setSelectedSeason] = useState(1);
+  const [showOutdated, setShowOutdated] = useState(true);
+  const [centerIndex, setCenterIndex] = useState(0);
+  const containerRef = useRef(null);
 
   const fetchTrainings = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:5000/api/workouts/workouts', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
       });
-    
       const data = await response.json();
       if (Array.isArray(data)) {
-        setTrainings(data);
+        const now = new Date();
+        const upcoming = data.filter(t => new Date(t.date) >= now);
+        const outdated = data.filter(t => new Date(t.date) < now);
+        setTrainings(upcoming);
+        setOutdatedTrainings(outdated);
+        if (user && user.id) {
+          const participationStatuses = {};
+          await Promise.all(upcoming.map(async (workout) => {
+            const res = await fetch(`http://localhost:5000/api/participant/workouts/${workout.id}/participants`);
+            if (res.ok) {
+              const participants = await res.json();
+              participationStatuses[workout.id] = participants.some(p => p.user_id === user.id);
+            } else {
+              participationStatuses[workout.id] = false;
+            }
+          }));
+          setParticipationStatus(participationStatuses);
+        }
       } else {
-        console.error('Expected an array of trainings, but got:', data);
         setTrainings([]);
+        setOutdatedTrainings([]);
       }
     } catch (error) {
-      console.error('Error fetching trainings:', error);
-      setTrainings([]); // Reset trainings on error
+      setTrainings([]);
+      setOutdatedTrainings([]);
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => { fetchTrainings(); }, []);
+
   useEffect(() => {
-    fetchTrainings(); // Fetch trainings on mount
-  }, []);
+    const container = containerRef.current;
+    if (!container) return;
 
-  const handleEditTraining = (training) => {
-    setTrainingToEdit(training);
-    setEditModalOpen(true);
-  };
+    const handleScroll = () => {
+      const children = Array.from(container.children);
+      const containerRect = container.getBoundingClientRect();
+      const containerCenter = containerRect.top + containerRect.height / 2;
 
-  const handleDeleteTraining = (id) => {
-    setTrainingToDelete(id);
-    setDeleteModalOpen(true);
-  };
+      let closestIndex = 0;
+      let closestDistance = Infinity;
 
+      children.forEach((child, index) => {
+        const rect = child.getBoundingClientRect();
+        const childCenter = rect.top + rect.height / 2;
+        const distance = Math.abs(containerCenter - childCenter);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+
+      setCenterIndex(closestIndex);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    // Initial call
+    handleScroll();
+
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [trainings, sortOption, selectedSeason]);
+
+  const handleEditTraining = (training) => { setTrainingToEdit(training); setEditModalOpen(true); };
+  const handleDeleteTraining = (id) => { setTrainingToDelete(id); setDeleteModalOpen(true); };
   const confirmDeleteTraining = async () => {
     if (trainingToDelete) {
       try {
         const token = localStorage.getItem('token');
         await fetch(`http://localhost:5000/api/workouts/workouts/${trainingToDelete}`, {
           method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
+          headers: { 'Authorization': `Bearer ${token}` },
         });
-        setTrainings(trainings.filter(training => training.id !== trainingToDelete));
+        setTrainings(trainings.filter(t => t.id !== trainingToDelete));
         setDeleteModalOpen(false);
-      } catch (error) {
-        console.error('Error deleting training:', error);
-      }
+      } catch {}
     }
   };
 
-  const formatDateTime = (dateString) => {
-    const date = new Date(`${dateString}T${time}`); // Combine date and time for correct parsing
+  const toggleParticipation = async (workoutId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (participationStatus[workoutId]) {
+        // Unparticipate
+        const response = await fetch(`http://localhost:5000/api/participant/workouts/${workoutId}/participants/${user.id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (response.ok) {
+          setParticipationStatus(prev => ({ ...prev, [workoutId]: false }));
+        }
+      } else {
+        // Participate
+        const response = await fetch(`http://localhost:5000/api/participant/workouts/${workoutId}/participants`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ userId: user.id }),
+        });
+        if (response.ok) {
+          setParticipationStatus(prev => ({ ...prev, [workoutId]: true }));
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling participation:', error);
+    }
+  };
 
+  const openParticipantsModal = async (workoutId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/participant/workouts/${workoutId}/participants`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const participants = await response.json();
+        setParticipantsList(participants);
+        setSelectedWorkoutId(workoutId);
+        setParticipantsModalOpen(true);
+      }
+    } catch (error) {
+      console.error('Error fetching participants:', error);
+    }
+  };
 
-
-    if (isNaN(date)) {
-      console.error('Invalid date:', dateString);
+  const formatDateTime = (dateString, time) => {
+    let dateObj;
+    try {
+      if (dateString.includes('T')) dateObj = new Date(dateString);
+      else if (time) dateObj = new Date(`${dateString}T${time}`);
+      else dateObj = new Date(dateString);
+    } catch {
       return 'Invalid Date';
     }
-    const formattedDate = date.toLocaleDateString('en-GB'); // Format as DD.MM.YYYY
-    const formattedTime = date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true }); // Format as HH:MM with AM/PM
-
+    if (isNaN(dateObj)) return 'Invalid Date';
+    const formattedDate = dateObj.toLocaleDateString('en-GB');
+    const formattedTime = dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
     return `${formattedDate} ${formattedTime}`;
   };
 
-  const sortedTrainings = [...trainings].sort((a, b) => {
-
+  const filteredTrainings = trainings.filter(t => t.season === selectedSeason);
+  const sortedTrainings = [...filteredTrainings].sort((a, b) => {
     switch (sortOption) {
-      case 'lastModified':
-        return new Date(b.updatedAt) - new Date(a.updatedAt); // Assuming updatedAt is the last modified date
-      case 'newest':
-        return new Date(b.date) - new Date(a.date);
-      case 'oldest':
-        return new Date(a.date) - new Date(b.date);
-      case 'title':
-        return a.title.localeCompare(b.title);
-      case 'upcoming':
-        return new Date(a.date) - new Date(b.date); // Sort by upcoming date
-      default:
-        return 0;
+      case 'lastModified': return new Date(b.updated_at) - new Date(a.updated_at);
+      case 'newest': return new Date(b.date) - new Date(a.date);
+      case 'oldest': return new Date(a.date) - new Date(b.date);
+      case 'title': return a.title.localeCompare(b.title);
+      case 'upcoming': return new Date(a.date) - new Date(b.date);
+      default: return 0;
     }
-  }).filter(training => new Date(training.date) >= new Date()); // Filter out past workouts
+  });
+
+  const getOpacity = (index) => {
+    const distance = Math.abs(index - centerIndex);
+    if (distance === 0) return 1;
+    if (distance === 1) return 0.7;
+    if (distance === 2) return 0.4;
+    return 0.2;
+  };
 
   return (
     <div className="container">
       <div className="field">
+        <label className="label">Season:</label>
+        <div className="control">
+          <div className="select">
+            <select value={selectedSeason} onChange={e => setSelectedSeason(parseInt(e.target.value))}>
+              <option value={1}>Season 1</option>
+              <option value={2}>Season 2</option>
+              <option value={3}>Season 3</option>
+              <option value={4}>Season 4</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div className="field">
         <label className="label">Sort By:</label>
         <div className="control">
           <div className="select">
-            <select value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+            <select value={sortOption} onChange={e => setSortOption(e.target.value)}>
               <option value="lastModified">Last Modified</option>
               <option value="newest">Date: Newest</option>
               <option value="oldest">Date: Oldest</option>
@@ -135,57 +236,58 @@ const Trainings = () => {
         </div>
       </div>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
+      <button
+        className="button is-info mb-3"
+        onClick={() => setShowOutdated(!showOutdated)}
+      >
+        {showOutdated ? 'Hide' : 'Show'} Outdated Workouts
+      </button>
+
+      {loading ? <p>Loading...</p> : (
         <div>
-          <button className="button is-primary is-sticky mt-3" onClick={() => setAddModalOpen(true)}>
-            Add Workout
-          </button>
+          <button className="button is-primary is-sticky mt-3" onClick={() => setAddModalOpen(true)}>Add Workout</button>
           <h2 className="title is-2 has-text-centered my-5">Workouts List</h2>
-          <div className="trainings-container">
-            {sortedTrainings.map((training) => (
-              <div key={training.id} className="training-item mt-5">
-                <div className='box'>
+          <div
+            className="trainings-container scrollable-container"
+            ref={containerRef}
+            style={{ maxHeight: '500px', overflowY: 'auto' }}
+          >
+            {sortedTrainings.map((training, index) => (
+              <div
+                key={training.id}
+                className="training-item mt-5"
+                style={{ opacity: getOpacity(index) }}
+              >
+                <div className="box">
                   <h4 className="title is-5 has-text-weight-bold">{training.title}</h4>
-                  <p className='label has-text-centered'>{formatDateTime(training.date, training.time)}</p>
+                  <p className="label has-text-centered">{formatDateTime(training.date, training.time)}</p>
+                  <p className="label" dangerouslySetInnerHTML={{ __html: training.description_html }} />
 
 
-
-                  <p className='label' dangerouslySetInnerHTML={{ __html: training.description_html }} /> {/* Displaying HTML content */}
+                  <div className="buttonContainer">
                   <button onClick={() => handleEditTraining(training)} className="button is-warning">Edit</button>
-                  {user.role === 'admin' && (
-                    <button onClick={() => handleDeleteTraining(training.id)} className="button is-danger">Delete</button>
-                  )}
+                  {user.role === 'admin' && <button onClick={() => handleDeleteTraining(training.id)} className="button is-danger">Delete</button>}
+                  <button onClick={() => toggleParticipation(training.id)} className={`button  ${participationStatus[training.id] ? 'is-danger' : 'is-success'}`}>
+                    {participationStatus[training.id] ? 'Unparticipate' : 'Participate'}
+                  </button>
+                  <button onClick={() => openParticipantsModal(training.id)} className="button is-info  ml-2">Participants</button>
+                  </div>
                 </div>
               </div>
             ))}
-            {addModalOpen && (
-              <AddTrainingModal
-                onClose={() => setAddModalOpen(false)}
-                onAdd={(newTraining) => {
-                  setTrainings([...trainings, newTraining]);
-                  setAddModalOpen(false);
-                }}
-              />
-            )}
+            {addModalOpen && <AddTrainingModal onClose={() => setAddModalOpen(false)} onAdd={newTraining => { setTrainings([...trainings, newTraining]); setAddModalOpen(false); }} />}
           </div>
 
-          {/* Modals */}
-          {editModalOpen && (
-            <EditTrainingModal
-              training={trainingToEdit}
-              onClose={() => setEditModalOpen(false)}
-              onUpdate={fetchTrainings}
-            />
+          {showOutdated && (
+            <>
+              <h2 className="title is-3 has-text-centered my-5">Outdated Workouts</h2>
+              <OutdatedWorkouts trainings={outdatedTrainings.filter(t => t.season === selectedSeason)} />
+            </>
           )}
-          {deleteModalOpen && (
-            <DeleteTrainingModal
-              training={trainings.find(t => t.id === trainingToDelete)}
-              onClose={() => setDeleteModalOpen(false)}
-              onConfirm={confirmDeleteTraining}
-            />
-          )}
+
+          {participantsModalOpen && <ParticipantsModal participants={participantsList} onClose={() => setParticipantsModalOpen(false)} />}
+          {editModalOpen && <EditTrainingModal training={trainingToEdit} onClose={() => setEditModalOpen(false)} onUpdate={fetchTrainings} />}
+          {deleteModalOpen && <DeleteTrainingModal training={trainings.find(t => t.id === trainingToDelete)} onClose={() => setDeleteModalOpen(false)} onConfirm={confirmDeleteTraining} />}
         </div>
       )}
     </div>
