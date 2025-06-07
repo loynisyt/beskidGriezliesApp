@@ -1,12 +1,11 @@
 import React from "react";
 
 const Files = () => {
-  // List of files to display (these should match the files in your public-files directory)
+  // Place your files in: my-app/frontend/public/files/
   const files = [
-    { name: "Formularz Zgloszeniowy", path: "my-app/frontend/public/files/formularz-zgloszeniowy-zlk4.docx" },
-    { name: "Zgoda rodzica opiekuna", path: "my-app/frontend/public/files/oswiadczenie-opiekuna.pdf" },
-    { name: "Zlk Regulamin", path: "my-app/frontend/public/files/oswiadczenie-opiekuna.pdf" },
-
+    { name: "Formularz Zgloszeniowy", path: "/files/formularz-zgloszeniowy-zlk4.docx" },
+    { name: "Zgoda rodzica opiekuna", path: "/files/oswiadczenie-opiekuna.pdf" },
+    { name: "Zlk Regulamin", path: "/files/ZLK-Regulamin4.pdf" },
   ];
 
   return (

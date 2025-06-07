@@ -1,31 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import EditPlayerModal from './EditPlayerModal'; // Import the EditPlayerModal
-import AttendanceModal from './AttendanceModal'; // Import AttendanceModal
-import './PlayersData.css'; // Assuming you will create a CSS file for styling
+import React, { useEffect, useState } from "react";
+import EditPlayerModal from "./EditPlayerModal"; // Import the EditPlayerModal
+import AttendanceModal from "./AttendanceModal"; // Import AttendanceModal
+import "./PlayersData.css"; // Assuming you will create a CSS file for styling
 
 const PlayersData = () => {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const [selectedPlayer, setSelectedPlayer] = useState(null); // State for selected player
   const [isEditing, setIsEditing] = useState(false); // State for editing mode
   const [attendanceModalOpen, setAttendanceModalOpen] = useState(false); // State for attendance modal
 
-  const fetchPlayersData = async () => { // Fetch players data
+  const fetchPlayersData = async () => {
+    // Fetch players data
     try {
-      const response = await fetch('http://localhost:5000/api/profile', {
+      const response = await fetch("http://localhost:5000/api/profile", {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
       if (!response.ok) {
-        throw new Error('Failed to fetch players data');
+        throw new Error("Failed to fetch players data");
       }
       const data = await response.json();
       setPlayers(data);
     } catch (error) {
-      setError('Error loading players data: ' + error.message);
+      setError("Error loading players data: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -38,7 +39,10 @@ const PlayersData = () => {
   return (
     <div className="players-data-container">
       <h2 className="title is-2">Players Data</h2>
-      <button className="button is-info mb-3" onClick={() => setAttendanceModalOpen(true)}>
+      <button
+        className="button is-info mb-3"
+        onClick={() => setAttendanceModalOpen(true)}
+      >
         Show Attendance Percentage
       </button>
       {loading && <p>Loading...</p>}
@@ -59,7 +63,7 @@ const PlayersData = () => {
             </tr>
           </thead>
           <tbody>
-            {players.map(player => (
+            {players.map((player) => (
               <tr key={player.id}>
                 <td>{player.first_name}</td>
                 <td>{player.last_name}</td>
@@ -70,27 +74,31 @@ const PlayersData = () => {
                 <td>{player.phone}</td>
                 <td>{player.jersey_number}</td>
                 <td>
-                  <button className="button is-warning" onClick={() => {
-                    setSelectedPlayer(player); // Set the selected player for editing
-                    setIsEditing(true); // Enable editing mode
-                  }}>Edit</button>
+                  <button
+                    className="button is-warning"
+                    onClick={() => {
+                      setSelectedPlayer(player); // Set the selected player for editing
+                      setIsEditing(true); // Enable editing mode
+                    }}
+                  >
+                    Edit
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       )}
-      {isEditing && selectedPlayer && ( // Show edit modal if in editing mode
-        <EditPlayerModal
-          player={selectedPlayer}
-          onClose={() => setIsEditing(false)}
-          onUpdate={fetchPlayersData} // Refresh players data after update
-        />
-      )}
+      {isEditing &&
+        selectedPlayer && ( // Show edit modal if in editing mode
+          <EditPlayerModal
+            player={selectedPlayer}
+            onClose={() => setIsEditing(false)}
+            onUpdate={fetchPlayersData} // Refresh players data after update
+          />
+        )}
       {attendanceModalOpen && (
-        <AttendanceModal
-          onClose={() => setAttendanceModalOpen(false)}
-        />
+        <AttendanceModal onClose={() => setAttendanceModalOpen(false)} />
       )}
     </div>
   );

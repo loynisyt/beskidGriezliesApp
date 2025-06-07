@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const EditPlayerModal = ({ player, onClose, onUpdate }) => {
   const [updatedPlayer, setUpdatedPlayer] = useState({
-    first_name: '',
-    last_name: '',
-    position: '',
+    first_name: "",
+    last_name: "",
+    position: "",
     height: 0,
     weight: 0,
-    email: '',
-    phone: '',
+    email: "",
+    phone: "",
     jersey_number: 0,
-    username: '',
-    role: '', // Added role field
-    password: '', // Added password field
+    username: "",
+    role: "", // Added role field
+    password: "", // Added password field
   });
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const EditPlayerModal = ({ player, onClose, onUpdate }) => {
         jersey_number: player.jersey_number,
         username: player.username,
         role: player.role, // Ensure role is set
-        password: player.password || '', // Ensure password is set
+        password: player.password || "", // Ensure password is set
       });
     }
   }, [player]);
@@ -41,23 +41,26 @@ const EditPlayerModal = ({ player, onClose, onUpdate }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:5000/api/profile/${player.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(updatedPlayer),
-      });
+      const response = await fetch(
+        `http://localhost:5000/api/profile/${player.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify(updatedPlayer),
+        }
+      );
 
       if (response.ok) {
         onUpdate(); // Refresh players data after update
         onClose(); // Close the modal
       } else {
-        console.error('Error updating player data');
+        console.error("Error updating player data");
       }
     } catch (error) {
-      console.error('Error updating player data:', error);
+      console.error("Error updating player data:", error);
     }
   };
 
@@ -73,7 +76,7 @@ const EditPlayerModal = ({ player, onClose, onUpdate }) => {
               <input
                 className="input"
                 name="username"
-                value={updatedPlayer.username || ''}
+                value={updatedPlayer.username || ""}
                 onChange={handleChange}
                 required
               />
@@ -83,7 +86,7 @@ const EditPlayerModal = ({ player, onClose, onUpdate }) => {
               <div className="select">
                 <select
                   name="role"
-                  value={updatedPlayer.role || ''}
+                  value={updatedPlayer.role || ""}
                   onChange={handleChange}
                   required
                 >
@@ -98,7 +101,7 @@ const EditPlayerModal = ({ player, onClose, onUpdate }) => {
               <input
                 className="input"
                 name="first_name"
-                value={updatedPlayer.first_name || ''}
+                value={updatedPlayer.first_name || ""}
                 onChange={handleChange}
                 required
               />
@@ -108,7 +111,7 @@ const EditPlayerModal = ({ player, onClose, onUpdate }) => {
               <input
                 className="input"
                 name="last_name"
-                value={updatedPlayer.last_name || ''}
+                value={updatedPlayer.last_name || ""}
                 onChange={handleChange}
                 required
               />
@@ -118,7 +121,7 @@ const EditPlayerModal = ({ player, onClose, onUpdate }) => {
               <div className="select">
                 <select
                   name="position"
-                  value={updatedPlayer.position || ''}
+                  value={updatedPlayer.position || ""}
                   onChange={handleChange}
                   required
                 >
@@ -137,7 +140,7 @@ const EditPlayerModal = ({ player, onClose, onUpdate }) => {
                 className="input"
                 type="number"
                 name="height"
-                value={updatedPlayer.height || ''}
+                value={updatedPlayer.height || ""}
                 onChange={handleChange}
                 required
                 min="100" // Ensure height is a positive number
@@ -150,7 +153,7 @@ const EditPlayerModal = ({ player, onClose, onUpdate }) => {
                 className="input"
                 type="number"
                 name="weight"
-                value={updatedPlayer.weight || ''}
+                value={updatedPlayer.weight || ""}
                 onChange={handleChange}
                 required
                 min="40" // Ensure weight is a positive number
@@ -163,7 +166,7 @@ const EditPlayerModal = ({ player, onClose, onUpdate }) => {
                 className="input"
                 type="email"
                 name="email"
-                value={updatedPlayer.email || ''}
+                value={updatedPlayer.email || ""}
                 onChange={handleChange}
                 required
                 pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" // Regex for email validation
@@ -175,7 +178,7 @@ const EditPlayerModal = ({ player, onClose, onUpdate }) => {
                 className="input"
                 type="tel"
                 name="phone"
-                value={updatedPlayer.phone || ''}
+                value={updatedPlayer.phone || ""}
                 onChange={handleChange}
                 pattern="^\d{9}$" // Regex for phone number validation (9 digits)
               />
@@ -186,26 +189,42 @@ const EditPlayerModal = ({ player, onClose, onUpdate }) => {
                 className="input"
                 type="number"
                 name="jersey_number"
-                value={updatedPlayer.jersey_number || ''}
+                value={updatedPlayer.jersey_number || ""}
                 onChange={handleChange}
                 required
                 min="0" // Ensure jersey number is between 0 and 99
                 max="99"
               />
             </div>
-            <input type="hidden" name="password" value={updatedPlayer.password} />
+            <input
+              type="hidden"
+              name="password"
+              value={updatedPlayer.password}
+            />
             <div className="field is-grouped is-grouped-right">
               <div className="control">
-                <button type="submit" className="button is-success">Save Changes</button>
+                <button type="submit" className="button is-success">
+                  Save Changes
+                </button>
               </div>
               <div className="control">
-                <button type="button" className="button is-danger" onClick={onClose}>Cancel</button>
+                <button
+                  type="button"
+                  className="button is-danger"
+                  onClick={onClose}
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </form>
         </div>
       </div>
-      <button className="modal-close is-large" aria-label="close" onClick={onClose}></button>
+      <button
+        className="modal-close is-large"
+        aria-label="close"
+        onClick={onClose}
+      ></button>
     </div>
   );
 };

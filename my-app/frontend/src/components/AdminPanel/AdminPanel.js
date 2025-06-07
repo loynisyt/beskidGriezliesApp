@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './AdminPanel.css';
 import DeleteUserModal from './DeleteUserModal'; // Correct import for DeleteUser Modal
+import '../../App.css'
 
 const AdminPanel = () => {
     const [users, setUsers] = useState([]);
@@ -14,7 +15,7 @@ const AdminPanel = () => {
     });
     const [message, setMessage] = useState('');
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [userToDelete, setUser] = useState(null); // Fixed the state variable name
+    const [userToDelete, setUser] = useState(null); 
 
     useEffect(() => {
         fetchUsers();
@@ -121,7 +122,7 @@ const AdminPanel = () => {
 
     return (
         <div className="container">
-            <h2 className="title is-2">Admin Panel</h2>
+           <h2 className="title is-1">Admin Panel</h2> 
             {message && (
                 <div className={`notification ${message.includes('Error') ? 'is-danger' : 'is-success'}`}>
                     {message}
@@ -207,7 +208,7 @@ const AdminPanel = () => {
                             {users.map(user => (
                                 <li key={user.id} className="user-list-item">
                                     <span className="user-name">{user.username}</span>
-                                    <button className="delete-button" onClick={() => openDeleteModal(user)}>Delete</button>
+                                    <button className="button is-danger is-small" onClick={() => openDeleteModal(user)}>Delete</button>
                                 </li>
                             ))}
                         </ul>

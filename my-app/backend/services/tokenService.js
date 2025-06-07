@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const db = require('./db'); // Assume a db module for querying the database
+const db = require('../db'); // Assume a db module for querying the database
 
 const TOKEN_EXPIRATION_HOURS = 24;
 
@@ -35,8 +35,16 @@ async function validateToken(token) {
   return null;
 }
 
-// Remove expired tokens from the database
-async function removeExpiredTokens() {
+// Remove expired tokens from the database for a specific user
+async function removeExpiredTokens(userId) {
+  const query = `
+    DELETE FROM user_tokens WHERE expires_at <= NOW() and user_id=${userId}
+  `;
+  await db.query(query);
+}
+
+// Remove all expired tokens from the database
+async function removeAllExpiredTokens() {
   const query = `
     DELETE FROM user_tokens WHERE expires_at <= NOW()
   `;
@@ -47,4 +55,5 @@ module.exports = {
   storeToken,
   validateToken,
   removeExpiredTokens,
+  removeAllExpiredTokens,
 };

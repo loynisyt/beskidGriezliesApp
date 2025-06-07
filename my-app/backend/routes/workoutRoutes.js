@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('./db');
+const pool = require('../db');
 
-// Add a new workout
+// ENDPOINT: dodanie treningu
 router.post('/add', async (req, res) => {
     const { title, description_html, created_by, date, time, season } = req.body; 
 
@@ -18,7 +18,7 @@ router.post('/add', async (req, res) => {
     }
 });
 
-// Get all workouts
+//ENDPOINT: wszystkie treningi
 router.get('/workouts', async (req, res) => {
     try {
         const allWorkouts = await pool.query('SELECT * FROM workouts');
@@ -50,7 +50,7 @@ router.put('/workouts/:id', async (req, res) => {
     }
 });
 
-// Delete a workout
+//  endpoint: usunięcie treningu
 router.delete('/workouts/:id', async (req, res) => {
     const { id } = req.params;
     try {

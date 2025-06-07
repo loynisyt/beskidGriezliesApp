@@ -9,11 +9,11 @@ const Profile = ({ user }) => {
     height: '',
     weight: '',
     username: '',
-    password: '',
     role: '',
     email: '',
     phone: '',
-    jerseyNumber: ''
+    jerseyNumber: '',
+    twoFactorMethod: ''
   });
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState('');
@@ -24,8 +24,6 @@ const Profile = ({ user }) => {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
-          
-
         }
       });
       if (!response.ok) {
@@ -33,17 +31,17 @@ const Profile = ({ user }) => {
       }
       const data = await response.json();
       setEditableUser({
-        firstName: data.first_name,
-        lastName: data.last_name,
-        position: data.position,
-        height: data.height,
-        weight: data.weight,
-        username: data.username,
-        password: data.password,
-        role: data.role,
-        email: data.email,
-        phone: data.phone,
-        jerseyNumber: data.jersey_number
+        firstName: data.first_name || '',
+        lastName: data.last_name || '',
+        position: data.position || '',
+        height: data.height || '',
+        weight: data.weight || '',
+        username: data.username || '',
+        role: data.role || '',
+        email: data.email || '',
+        phone: data.phone || '',
+        jerseyNumber: data.jersey_number || '',
+        twoFactorMethod: (data.two_factor_method || '').toLowerCase()
       });
     } catch (error) {
       setMessage('Error loading profile: ' + error.message);
@@ -56,7 +54,10 @@ const Profile = ({ user }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEditableUser({ ...editableUser, [name]: value });
+    setEditableUser(prev => ({
+      ...prev,
+      [name]: name === 'twoFactorMethod' ? value.toLowerCase() : value
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -75,17 +76,18 @@ const Profile = ({ user }) => {
           height: editableUser.height,
           weight: editableUser.weight,
           username: editableUser.username,
-          password: editableUser.password,
           role: editableUser.role,
           email: editableUser.email,
           phone: editableUser.phone,
           jersey_number: editableUser.jerseyNumber,
+          two_factor_method: editableUser.twoFactorMethod
         })
       });
 
       if (response.ok) {
         setMessage('Profile updated successfully!');
         setIsEditing(false);
+        fetchUserProfile(); // Refresh profile after update
       } else {
         setMessage('Error updating profile');
       }
@@ -142,9 +144,9 @@ const Profile = ({ user }) => {
                 </div>
               </div>
 
-              <div className="field">
-                <label className="label">Jersey Number</label>
-                <div className="control">
+              <div className="field is-grouped">
+                <div className="control is-expanded">
+                  <label className="label">Jersey Number</label>
                   <input
                     className="input"
                     type="number"
@@ -156,7 +158,23 @@ const Profile = ({ user }) => {
                     max="99"
                   />
                 </div>
+              
               </div>
+               <div className="control is-expanded">
+                  <label className="label ">Two-Factor Authentication</label>
+                  <div className="select is-fullwidth">
+                    <select
+                      name="twoFactorMethod"
+                      value={editableUser.twoFactorMethod}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                    >
+                      <option value="">None</option>
+                      <option value="sms">SMS</option>
+                      <option value="email">Email</option>
+                    </select>
+                  </div>
+                </div>
             </div>
 
             <div className="column is-half">
@@ -227,18 +245,16 @@ const Profile = ({ user }) => {
                 <button
                   type="button"
                   className="button is-primary"
-                    onClick={(e) => {
-                      e.preventDefault(); // Prevent default form submission
-                      setIsEditing(true);
-                    }}
-
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsEditing(true);
+                  }}
                 >
                   Edit Profile
                 </button>
               ) : (
                 <>
                   <button type="submit" className="button is-success mr-2" disabled={!isEditing}>
-
                     Save Changes
                   </button>
                   <button
@@ -255,9 +271,9 @@ const Profile = ({ user }) => {
               )}
             </div>
           </div>
-            </form>
-          </div>
-        </div>
+        </form>
+      </div>
+    </div>
   );
 };
 

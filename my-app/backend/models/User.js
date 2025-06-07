@@ -34,7 +34,12 @@ const User = sequelize.define('User', {
     jersey_number: {
         type: DataTypes.INTEGER,
         allowNull: true
-    }
+    },
+    two_factor_metghod: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+
 });
 
 module.exports = User;

@@ -1,6 +1,7 @@
 {
   "name": "my-app",
   "version": "0.1.0",
+  "proxy": "http://localhost:5000",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
@@ -11,9 +12,13 @@
     "bulma": "^1.0.2",
     "draft-js": "^0.11.7",
     "express": "^4.21.1",
+    "i18next": "^23.7.18",
+    "i18next-browser-languagedetector": "^7.2.0",
+    "i18next-http-backend": "^2.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-draft-wysiwyg": "^1.15.0",
+    "react-i18next": "^11.18.6",
     "react-quill": "^2.0.0",
     "react-router-dom": "^6.26.2",
     "react-scripts": "^5.0.1",

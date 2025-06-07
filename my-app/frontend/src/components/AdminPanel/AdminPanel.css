@@ -8,8 +8,19 @@
 
 .user-name {
     font-weight: bold; /* Make the username bold */
-    color: #333; /* Darker text color */
+      color: #00d1b2 !important;
+
 }
+.container{
+    padding-left: 12px;
+    padding-right: 12px;
+}
+/* .is-small{
+    width: 80px;
+    height: 50px;
+}
+    */
+
 
 .delete-button {
     background-color: #ff3860; /* Red background */

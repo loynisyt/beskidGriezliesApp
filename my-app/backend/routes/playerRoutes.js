@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('./db'); // Assuming you have a database connection setup
+const pool = require('../db'); // Assuming you have a database connection setup
 
-// Fetch all player profiles
+// Endpoint: Get all players data
 
 
 router.get('/', async (req, res) => {
@@ -15,6 +15,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Endpoint: Get player data by ID
 router.get('/user/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -30,20 +31,15 @@ router.get('/user/:id', async (req, res) => {
   }
 });
 
-// Update player profile
+// Endpoint: Update player profile
 
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { first_name, last_name, position, height, weight, email, phone, jersey_number } = req.body;
-
-
-
-
-
+  const { first_name, last_name, position, height, weight, email, phone, jersey_number, two_factor_method } = req.body;
   try {
     const existingUser = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
     const result = await pool.query(
-      'UPDATE users SET first_name = $1, last_name = $2, position = $3, height = $4, weight = $5, email = $6, phone = $7, jersey_number = $8, username = $9, role = $10 WHERE id = $11 RETURNING *',
+      'UPDATE users SET first_name = $1, last_name = $2, position = $3, height = $4, weight = $5, email = $6, phone = $7, jersey_number = $8, username = $9, role = $10, two_factor_method=$12 WHERE id = $11 RETURNING *',
       [
         first_name,
         last_name,
@@ -55,7 +51,8 @@ router.put('/:id', async (req, res) => {
         jersey_number,
         existingUser.rows[0].username, // Use existing username
         existingUser.rows[0].role, // Use existing role
-        id
+        id,
+        two_factor_method
       ]
 
     );

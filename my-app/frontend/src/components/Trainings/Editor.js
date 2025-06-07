@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // Import the styles for the editor
+import React, { useEffect, useRef } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Import the styles for the editor
 
 const EditorComponent = ({ value, onChange, title, setTitle }) => {
   const quillRef = useRef(null);
@@ -18,16 +18,23 @@ const EditorComponent = ({ value, onChange, title, setTitle }) => {
   const handleColorChange = (e) => {
     const color = e.target.value;
     const quill = quillRef.current.getEditor();
-    quill.format('color', color);
+    quill.format("color", color);
   };
 
   return (
-    <div className="editor-container" style={{ marginTop: '10px' }}>
-      <div className="toolbar" style={{ marginBottom: '10px' }}>
-        <input type="color" onChange={handleColorChange} style={{ marginRight: '10px' }} />
+    <div className="editor-container" style={{ marginTop: "10px" }}>
+      <div className="toolbar" style={{ marginBottom: "10px" }}>
+        <input
+          type="color"
+          onChange={handleColorChange}
+          style={{ marginRight: "10px" }}
+        />
       </div>
-    
-      <div className="editor-area" style={{ border: '2px solid #00d1b2', padding: '10px' }}>
+
+      <div
+        className="editor-area"
+        style={{ border: "2px solid #00d1b2", padding: "10px" }}
+      >
         <ReactQuill
           ref={quillRef}
           value={value}
@@ -35,11 +42,11 @@ const EditorComponent = ({ value, onChange, title, setTitle }) => {
           theme="snow"
           modules={{
             toolbar: [
-              [{ 'header': [1, 2, false] }],
-              ['bold', 'italic', 'underline'],
-              ['link', 'image'],
-              [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-              ['clean'] // remove formatting button
+              [{ header: [1, 2, false] }],
+              ["bold", "italic", "underline"],
+              ["link", "image"],
+              [{ list: "ordered" }, { list: "bullet" }],
+              ["clean"], // remove formatting button
             ],
           }}
         />

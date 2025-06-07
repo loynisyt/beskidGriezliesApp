@@ -28,4 +28,36 @@
     height: 256px;
 
   }
+  .home-button{
+    width: 100%;
+  }
+ img{
+  width: 100%;
+ }
+ 
+ .kolumn p {
+
+    font-size: 1.2rem;
+    color: #333; /* Kolor tekstu */
+    margin: 0;
+    padding: 10px;
+    text-align: center;
+    font-weight: bolder;
+  }
+  
+  .kolumn:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+  }
+
+  
+  .kolumn img {
+    border-radius: 8px;
+  }
+  
+  .kolumn:hover img {
+    filter: brightness(0.9);
+  }
+ 
+
   
